@@ -109,8 +109,19 @@ The audio subsystem (`AudioEngine.cs`) manages session audio without external au
 
 ---
 
-## 🚀 Installation & Deployment
+## 🚀 30-Second Quickstart & Deployment
 
+### Option A: Standalone Binary (Zero Dependencies)
+Download the pre-compiled single-file executable directly (no .NET SDK required):
+* 💾 **[Download Death.exe v1.0.0 (28.9 MB)](https://github.com/karansinghverma979/Death/releases/download/v1.0.0/Death.exe)**
+
+**1-Line PowerShell Auto-Download:**
+```powershell
+New-Item -ItemType Directory -Path "$HOME\.local\bin" -Force | Out-Null
+irm https://github.com/karansinghverma979/Death/releases/download/v1.0.0/Death.exe -OutFile "$HOME\.local\bin\Death.exe"
+```
+
+### Option B: Automated Build & Schedule Installer
 Deploy the Death module using the automated installer:
 
 ```powershell
