@@ -115,10 +115,10 @@ Deploy the Death module using the automated installer:
 
 ```powershell
 # Interactive installation (prompts for interval and quote)
-.\Modules\Death\Install-Death.ps1
+.\Install-Death.ps1
 
 # Non-interactive silent installation
-.\Modules\Death\Install-Death.ps1 -TaskName "Death" -IntervalMinutes 30 -Quote "KEEP CALM AND STUDY HARD." -NonInteractive
+.\Install-Death.ps1 -TaskName "Death" -IntervalMinutes 30 -Quote "KEEP CALM AND STUDY HARD." -NonInteractive
 ```
 
 ### Deployment Workflow:
@@ -162,8 +162,8 @@ To cleanly remove the scheduled task and binaries:
 
 ```powershell
 # Complete eradication (removes task and deletes ~/.local/bin/Death.exe)
-.\Modules\Death\Uninstall-Death.ps1
+.\Uninstall-Death.ps1
 
 # Preserve compiled binary for manual CLI usage, removing only the schedule
-.\Modules\Death\Uninstall-Death.ps1 -KeepBinary
+.\Uninstall-Death.ps1 -KeepBinary
 ```
