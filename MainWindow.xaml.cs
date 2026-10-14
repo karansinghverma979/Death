@@ -26,10 +26,14 @@ namespace Sakshi.Death
         private readonly bool _isTestMode;
         private readonly DispatcherTimer _countdownTimer;
         private readonly DispatcherTimer _focusTimer;
+        private DispatcherTimer? _volumeFadeTimer;
         private readonly MediaPlayer _mediaPlayer = new();
+
+        public static MainWindow? Current { get; private set; }
 
         public MainWindow(string? quoteOverride = null, int countdownSeconds = 60, string? snapshotPath = null, bool isTestMode = false)
         {
+            Current = this;
             InitializeComponent();
             _myPid = (uint)Process.GetCurrentProcess().Id;
             _secondsRemaining = countdownSeconds;
@@ -57,9 +61,14 @@ namespace Sakshi.Death
         {
             _windowHandle = new WindowInteropHelper(this).Handle;
 
-            // 1. Full System Takeover: Pause active media & mute other audio sessions
+            // Taskbar Bleed Defense: Explicitly clamp window to primary screen rect
+            this.Left = 0;
+            this.Top = 0;
+            this.Width = SystemParameters.PrimaryScreenWidth;
+            this.Height = SystemParameters.PrimaryScreenHeight;
+
+            // 1. Targeted Media Freeze: Pause strictly Browsers, WMP, and VLC (zero blanket muting)
             await AudioEngine.PauseActiveMediaAsync();
-            AudioEngine.MuteOtherSessions(true, _myPid);
 
             // 2. Start Embedded Ambient Audio
             InitializeAmbientAudio();
@@ -135,19 +144,57 @@ namespace Sakshi.Death
                 if (stream != null)
                 {
                     _tempAudioPath = Path.Combine(Path.GetTempPath(), "sakshi_death_ambient.mp3");
-                    using (var fs = new FileStream(_tempAudioPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+
+                    // Zero SSD Burn Invariant: Reuse cached ambient whistle if present with matching length
+                    bool needExtraction = !File.Exists(_tempAudioPath);
+                    if (!needExtraction)
                     {
+                        try
+                        {
+                            if (new FileInfo(_tempAudioPath).Length != stream.Length)
+                            {
+                                needExtraction = true;
+                            }
+                        }
+                        catch
+                        {
+                            needExtraction = true;
+                        }
+                    }
+
+                    if (needExtraction)
+                    {
+                        using var fs = new FileStream(_tempAudioPath, FileMode.Create, FileAccess.Write, FileShare.Read);
                         stream.CopyTo(fs);
                     }
 
-                    _mediaPlayer.Open(new Uri(_tempAudioPath));
-                    _mediaPlayer.Volume = 0.40; // Ambient whistle volume
-                    _mediaPlayer.MediaEnded += (s, e) =>
+                    if (File.Exists(_tempAudioPath))
                     {
-                        _mediaPlayer.Position = TimeSpan.Zero;
+                        _mediaPlayer.Open(new Uri(_tempAudioPath));
+                        _mediaPlayer.Volume = 0.0; // Start at silence for cinematic 800ms fade-in
+                        _mediaPlayer.MediaEnded += (s, e) =>
+                        {
+                            _mediaPlayer.Position = TimeSpan.Zero;
+                            _mediaPlayer.Play();
+                        };
                         _mediaPlayer.Play();
-                    };
-                    _mediaPlayer.Play();
+
+                        // Cinematic 800ms fade-in ramp (20 steps of 40ms, +0.02 volume per step up to 0.40)
+                        _volumeFadeTimer?.Stop();
+                        _volumeFadeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(40) };
+                        _volumeFadeTimer.Tick += (s, e) =>
+                        {
+                            if (_mediaPlayer.Volume < 0.40)
+                            {
+                                _mediaPlayer.Volume = Math.Min(0.40, _mediaPlayer.Volume + 0.02);
+                            }
+                            else
+                            {
+                                _volumeFadeTimer.Stop();
+                            }
+                        };
+                        _volumeFadeTimer.Start();
+                    }
                 }
             }
             catch { }
@@ -156,9 +203,6 @@ namespace Sakshi.Death
         private void CountdownTimer_Tick(object? sender, EventArgs e)
         {
             _secondsRemaining--;
-
-            // Keep other audio muted in case newly launched background apps try to make noise
-            AudioEngine.MuteOtherSessions(true, _myPid);
 
             if (_secondsRemaining > 0)
             {
@@ -209,13 +253,13 @@ namespace Sakshi.Death
 
         private void Window_StateChanged(object? sender, EventArgs e)
         {
-            if (WindowState != WindowState.Maximized)
+            if (WindowState != WindowState.Normal)
             {
-                WindowState = WindowState.Maximized;
-                if (_windowHandle != IntPtr.Zero)
-                {
-                    AudioEngine.EnforceTopmost(_windowHandle);
-                }
+                WindowState = WindowState.Normal;
+            }
+            if (_windowHandle != IntPtr.Zero)
+            {
+                AudioEngine.EnforceTopmost(_windowHandle);
             }
         }
 
@@ -229,9 +273,9 @@ namespace Sakshi.Death
             try
             {
                 // Anti-minimize guard: immediately restore if Win+D or shell attempted minimization
-                if (WindowState != WindowState.Maximized)
+                if (WindowState != WindowState.Normal)
                 {
-                    WindowState = WindowState.Maximized;
+                    WindowState = WindowState.Normal;
                 }
 
                 // 1. Virtual Desktop Snap
@@ -287,7 +331,11 @@ namespace Sakshi.Death
             }
             else
             {
-                CleanUpAudioAndState();
+                try
+                {
+                    Task.Run(async () => await AudioEngine.RestorePausedMediaAsync()).Wait(1000);
+                }
+                catch { }
             }
         }
 
@@ -296,17 +344,18 @@ namespace Sakshi.Death
             UnlockAndExit();
         }
 
-        private void UnlockAndExit()
+        private async void UnlockAndExit()
         {
-            CleanUpAudioAndState();
+            await CleanUpAudioAndStateAsync();
             Close();
         }
 
-        private void CleanUpAudioAndState()
+        private async Task CleanUpAudioAndStateAsync()
         {
             UninstallKeyboardHook();
             _countdownTimer.Stop();
             _focusTimer.Stop();
+            _volumeFadeTimer?.Stop();
 
             try
             {
@@ -315,24 +364,40 @@ namespace Sakshi.Death
             }
             catch { }
 
-            // Restore all muted audio sessions
+            // Restore media sessions that were playing and paused by Death (Browsers, WMP, VLC)
             try
             {
-                AudioEngine.MuteOtherSessions(false, 0);
+                await AudioEngine.RestorePausedMediaAsync();
             }
             catch { }
 
-            // Clean up temporary audio file
-            if (!string.IsNullOrEmpty(_tempAudioPath) && File.Exists(_tempAudioPath))
+            // Audio caching: Keep %TEMP%\sakshi_death_ambient.mp3 cached for 0 SSD writes on recurring executions
+        }
+
+        /// <summary>
+        /// Emergency safety trap: Unconditionally releases the low-level keyboard hook
+        /// and attempts to restore media playback if an unhandled crash or abort occurs.
+        /// </summary>
+        public static void ForceEmergencyCleanup()
+        {
+            try
             {
-                try { File.Delete(_tempAudioPath); } catch { }
+                Current?.UninstallKeyboardHook();
             }
+            catch { }
+
+            try
+            {
+                Task.Run(async () => await AudioEngine.RestorePausedMediaAsync()).Wait(600);
+            }
+            catch { }
         }
 
         #region --- LOW-LEVEL SYSTEM KEYBOARD HOOK ---
         private const int WH_KEYBOARD_LL = 13;
         private const int VK_TAB = 0x09;
         private const int VK_ESCAPE = 0x1B;
+        private const int VK_SPACE = 0x20;
         private const int VK_F4 = 0x73;
         private const int VK_LWIN = 0x5B;
         private const int VK_RWIN = 0x5C;
@@ -399,8 +464,8 @@ namespace Sakshi.Death
                     return (IntPtr)1;
                 }
 
-                // 2. Block Alt+Tab, Alt+Esc, Alt+F4
-                if (isAlt && (vkCode == VK_TAB || vkCode == VK_ESCAPE || vkCode == VK_F4))
+                // 2. Block Alt+Tab, Alt+Esc, Alt+F4, and Alt+Space (Window System Menu)
+                if (isAlt && (vkCode == VK_TAB || vkCode == VK_ESCAPE || vkCode == VK_F4 || vkCode == VK_SPACE))
                 {
                     return (IntPtr)1;
                 }

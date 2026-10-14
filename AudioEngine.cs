@@ -10,96 +10,6 @@ namespace Sakshi.Death
 {
     #region --- COM INTERFACES ---
     [ComImport]
-    [Guid("5CDF2C82-841E-4546-9722-0CF74078229A")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IAudioEndpointVolume
-    {
-        [PreserveSig] int f();
-        [PreserveSig] int g();
-        [PreserveSig] int h();
-        [PreserveSig] int i();
-        [PreserveSig] int SetMasterVolumeLevelScalar(float fLevel, Guid pguidEventContext);
-        [PreserveSig] int j();
-        [PreserveSig] int GetMasterVolumeLevelScalar(out float pfLevel);
-        [PreserveSig] int k();
-        [PreserveSig] int l();
-        [PreserveSig] int m();
-        [PreserveSig] int n();
-        [PreserveSig] int SetMute([MarshalAs(UnmanagedType.Bool)] bool bMute, Guid pguidEventContext);
-        [PreserveSig] int GetMute(out bool pbMute);
-    }
-
-    [ComImport]
-    [Guid("87CE5498-68D6-44E5-9215-6DA47EF883D8")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface ISimpleAudioVolume
-    {
-        [PreserveSig] int SetMasterVolume(float fLevel, Guid pguidEventContext);
-        [PreserveSig] int GetMasterVolume(out float pfLevel);
-        [PreserveSig] int SetMute([MarshalAs(UnmanagedType.Bool)] bool bMute, Guid pguidEventContext);
-        [PreserveSig] int GetMute(out bool pbMute);
-    }
-
-    [ComImport]
-    [Guid("F4B1A599-7266-4319-A8CA-E70ACB11E8CD")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IAudioSessionControl
-    {
-        [PreserveSig] int GetState(out int pRetVal);
-        [PreserveSig] int GetDisplayName(out IntPtr pRetVal);
-        [PreserveSig] int SetDisplayName([MarshalAs(UnmanagedType.LPWStr)] string Value, Guid EventContext);
-        [PreserveSig] int GetIconPath(out IntPtr pRetVal);
-        [PreserveSig] int SetIconPath([MarshalAs(UnmanagedType.LPWStr)] string Value, Guid EventContext);
-        [PreserveSig] int GetGroupingParam(out Guid pRetVal);
-        [PreserveSig] int SetGroupingParam(Guid Override, Guid EventContext);
-        [PreserveSig] int RegisterAudioSessionEvents(IntPtr NewNotifications);
-        [PreserveSig] int UnregisterAudioSessionEvents(IntPtr NewNotifications);
-    }
-
-    [ComImport]
-    [Guid("bfb7ff88-7239-4fc9-8fa2-07c950be9c6d")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IAudioSessionControl2
-    {
-        [PreserveSig] int GetState(out int pRetVal);
-        [PreserveSig] int GetDisplayName(out IntPtr pRetVal);
-        [PreserveSig] int SetDisplayName([MarshalAs(UnmanagedType.LPWStr)] string Value, Guid EventContext);
-        [PreserveSig] int GetIconPath(out IntPtr pRetVal);
-        [PreserveSig] int SetIconPath([MarshalAs(UnmanagedType.LPWStr)] string Value, Guid EventContext);
-        [PreserveSig] int GetGroupingParam(out Guid pRetVal);
-        [PreserveSig] int SetGroupingParam(Guid Override, Guid EventContext);
-        [PreserveSig] int RegisterAudioSessionEvents(IntPtr NewNotifications);
-        [PreserveSig] int UnregisterAudioSessionEvents(IntPtr NewNotifications);
-        [PreserveSig] int GetSessionIdentifier(out IntPtr pRetVal);
-        [PreserveSig] int GetSessionInstanceIdentifier(out IntPtr pRetVal);
-        [PreserveSig] int GetProcessId(out uint pRetVal);
-        [PreserveSig] int IsSystemSoundsSession();
-    }
-
-    [ComImport]
-    [Guid("E2F5BB11-0570-40CA-ACDD-3AA01277DEE8")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IAudioSessionEnumerator
-    {
-        [PreserveSig] int GetCount(out int SessionCount);
-        [PreserveSig] int GetSession(int SessionIndex, out IAudioSessionControl Session);
-    }
-
-    [ComImport]
-    [Guid("77AA99A0-1BD6-484F-8BC7-2C654C9A9B6F")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IAudioSessionManager2
-    {
-        [PreserveSig] int GetAudioSessionControl(Guid AudioSessionGuid, uint StreamFlags, out IntPtr SessionControl);
-        [PreserveSig] int GetSimpleAudioVolume(Guid AudioSessionGuid, uint StreamFlags, out IntPtr AudioVolume);
-        [PreserveSig] int GetSessionEnumerator(out IAudioSessionEnumerator SessionList);
-        [PreserveSig] int RegisterSessionNotification(IntPtr SessionNotification);
-        [PreserveSig] int UnregisterSessionNotification(IntPtr SessionNotification);
-        [PreserveSig] int RegisterDuckNotification([MarshalAs(UnmanagedType.LPWStr)] string sessionID, IntPtr duckNotification);
-        [PreserveSig] int UnregisterDuckNotification(IntPtr duckNotification);
-    }
-
-    [ComImport]
     [Guid("a5cd92ff-29be-454c-8d04-d82879fb3f1b")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IVirtualDesktopManager
@@ -108,26 +18,6 @@ namespace Sakshi.Death
         [PreserveSig] int GetWindowDesktopId(IntPtr topLevelWindow, out Guid desktopId);
         [PreserveSig] int MoveWindowToDesktop(IntPtr topLevelWindow, ref Guid desktopId);
     }
-
-    [ComImport]
-    [Guid("D666063F-1587-4E43-81F1-B948E807363F")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IMMDevice
-    {
-        [PreserveSig] int Activate(ref Guid id, int clsCtx, int activationParams, [MarshalAs(UnmanagedType.IUnknown)] out object obj);
-    }
-
-    [ComImport]
-    [Guid("A95664D2-9614-4F35-A746-DE8DB63617E6")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IMMDeviceEnumerator
-    {
-        [PreserveSig] int f();
-        [PreserveSig] int GetDefaultAudioEndpoint(int dataFlow, int role, out IMMDevice endpoint);
-    }
-
-    [ComImport, Guid("BCDE0395-E52F-467C-8E3D-C4579291692E")]
-    internal class MMDeviceEnumeratorComObject { }
     #endregion
 
     public static class AudioEngine
@@ -183,6 +73,12 @@ namespace Sakshi.Death
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
+        [DllImport("user32.dll")]
+        public static extern int GetSystemMetrics(int nIndex);
+
+        public const int SM_CXSCREEN = 0;
+        public const int SM_CYSCREEN = 1;
+        public const int SW_SHOWNORMAL = 1;
         public const int SW_SHOWMAXIMIZED = 3;
         public const int SW_RESTORE = 9;
 
@@ -191,11 +87,14 @@ namespace Sakshi.Death
         public const int VK_SPACE = 0x20;
 
         public const uint WM_APPCOMMAND = 0x0319;
+        public const int APPCOMMAND_MEDIA_PLAY = 46;
         public const int APPCOMMAND_MEDIA_PAUSE = 47;
         public const int APPCOMMAND_MEDIA_PLAY_PAUSE = 14;
         #endregion
 
         private static readonly IVirtualDesktopManager? _desktopManager;
+        private static readonly System.Collections.Generic.List<GlobalSystemMediaTransportControlsSession> _pausedGsmtcSessions = new();
+        private static readonly System.Collections.Generic.List<IntPtr> _pausedWin32Windows = new();
 
         static AudioEngine()
         {
@@ -213,14 +112,58 @@ namespace Sakshi.Death
             }
         }
 
-        #region --- ACTIVE MEDIA PAUSING ---
+        #region --- TARGETED MEDIA FILTERING & PAUSE / RESTORE ---
         /// <summary>
-        /// Explicitly pauses all active media across modern Windows GSMTC apps (Chrome, Edge, Spotify)
-        /// and classic Win32 desktop media players (VLC, MPV, MPC-HC, PotPlayer).
+        /// Identifies whether a media source belongs strictly to Browsers, Windows Media Player, or VLC.
+        /// Ignores ffmpeg, Python scripts, terminal sounds, system alerts, Discord, etc.
+        /// </summary>
+        public static bool IsTargetMediaApp(string? sourceAppId)
+        {
+            if (string.IsNullOrWhiteSpace(sourceAppId)) return false;
+            string id = sourceAppId.ToLowerInvariant();
+
+            // 1. Browsers
+            if (id.Contains("chrome") ||
+                id.Contains("msedge") ||
+                id.Contains("firefox") ||
+                id.Contains("brave") ||
+                id.Contains("opera") ||
+                id.Contains("vivaldi") ||
+                id.Contains("arc") ||
+                id.Contains("zen") ||
+                id.Contains("waterfox"))
+            {
+                return true;
+            }
+
+            // 2. Windows Media Player (Classic wmplayer & Modern Windows 11 Media Player / Groove)
+            if (id.Contains("wmplayer") ||
+                id.Contains("zunemusic") ||
+                id.Contains("media.player") ||
+                id.Contains("mediaplayer"))
+            {
+                return true;
+            }
+
+            // 3. VLC Media Player
+            if (id.Contains("vlc"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Temporarily pauses strictly targeted media sessions (Browsers, WMP, VLC).
+        /// Records paused sessions in memory so they can be accurately restored on exit.
         /// </summary>
         public static async Task PauseActiveMediaAsync()
         {
-            // 1. If user is actively watching VLC / a media player in foreground, send Space immediately
+            _pausedGsmtcSessions.Clear();
+            _pausedWin32Windows.Clear();
+
+            // 1. If operator is actively focused on VLC or classic WMP, send pause command
             try
             {
                 IntPtr priorFg = GetForegroundWindow();
@@ -229,16 +172,16 @@ namespace Sakshi.Death
                     GetWindowThreadProcessId(priorFg, out uint fgPid);
                     using var fgProc = Process.GetProcessById((int)fgPid);
                     string procName = fgProc.ProcessName.ToLowerInvariant();
-                    if (procName.Contains("vlc") || procName.Contains("mpv") || procName.Contains("potplayer") || procName.Contains("mpc"))
+                    if (procName.Contains("vlc") || procName.Contains("wmplayer"))
                     {
-                        PostMessage(priorFg, WM_KEYDOWN, (IntPtr)VK_SPACE, IntPtr.Zero);
-                        PostMessage(priorFg, WM_KEYUP, (IntPtr)VK_SPACE, IntPtr.Zero);
+                        SendMessage(priorFg, WM_APPCOMMAND, priorFg, (IntPtr)(APPCOMMAND_MEDIA_PAUSE << 16));
+                        _pausedWin32Windows.Add(priorFg);
                     }
                 }
             }
             catch { }
 
-            // 2. Pause Modern WinRT GSMTC Media Sessions (YouTube in Chrome/Edge, Spotify, etc.)
+            // 2. Modern WinRT GSMTC Media Sessions (YouTube in Chrome/Edge/Firefox, WMP, VLC)
             try
             {
                 var sessionManager = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
@@ -249,11 +192,20 @@ namespace Sakshi.Death
                     {
                         try
                         {
+                            if (!IsTargetMediaApp(session.SourceAppUserModelId))
+                            {
+                                continue; // Strictly protect ffmpeg, Python, system sounds, etc.
+                            }
+
                             var playbackInfo = session.GetPlaybackInfo();
                             if (playbackInfo != null &&
                                 playbackInfo.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)
                             {
-                                await session.TryPauseAsync();
+                                bool paused = await session.TryPauseAsync();
+                                if (paused)
+                                {
+                                    _pausedGsmtcSessions.Add(session);
+                                }
                             }
                         }
                         catch { }
@@ -262,15 +214,15 @@ namespace Sakshi.Death
             }
             catch { }
 
-            // 3. Pause Classic Win32 Desktop Players (VLC, MPV, MPC-HC, PotPlayer) via WM_APPCOMMAND & Windows
-            PauseDesktopMediaPlayers();
+            // 3. Classic Win32 Desktop Players: VLC and WMP ONLY
+            PauseTargetDesktopPlayers();
         }
 
-        public static void PauseDesktopMediaPlayers()
+        private static void PauseTargetDesktopPlayers()
         {
             try
             {
-                string[] playerProcessNames = { "vlc", "mpv", "mpc-hc", "mpc-hc64", "potplayer", "potplayermini64", "foobar2000", "aimp" };
+                string[] playerProcessNames = { "vlc", "wmplayer" };
                 foreach (string procName in playerProcessNames)
                 {
                     var procs = Process.GetProcessesByName(procName);
@@ -278,26 +230,10 @@ namespace Sakshi.Death
                     {
                         try
                         {
-                            // Send WM_APPCOMMAND and Space to the main process window
-                            if (proc.MainWindowHandle != IntPtr.Zero)
+                            if (proc.MainWindowHandle != IntPtr.Zero && !_pausedWin32Windows.Contains(proc.MainWindowHandle))
                             {
                                 SendMessage(proc.MainWindowHandle, WM_APPCOMMAND, proc.MainWindowHandle, (IntPtr)(APPCOMMAND_MEDIA_PAUSE << 16));
-                                SendMessage(proc.MainWindowHandle, WM_APPCOMMAND, proc.MainWindowHandle, (IntPtr)(APPCOMMAND_MEDIA_PLAY_PAUSE << 16));
-                                PostMessage(proc.MainWindowHandle, WM_KEYDOWN, (IntPtr)VK_SPACE, IntPtr.Zero);
-                                PostMessage(proc.MainWindowHandle, WM_KEYUP, (IntPtr)VK_SPACE, IntPtr.Zero);
-                            }
-
-                            // Enumerate all thread windows (e.g. VLC separate video output or fullscreen window)
-                            foreach (ProcessThread thread in proc.Threads)
-                            {
-                                EnumThreadWindows(thread.Id, (hWnd, lParam) =>
-                                {
-                                    SendMessage(hWnd, WM_APPCOMMAND, hWnd, (IntPtr)(APPCOMMAND_MEDIA_PAUSE << 16));
-                                    SendMessage(hWnd, WM_APPCOMMAND, hWnd, (IntPtr)(APPCOMMAND_MEDIA_PLAY_PAUSE << 16));
-                                    PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_SPACE, IntPtr.Zero);
-                                    PostMessage(hWnd, WM_KEYUP, (IntPtr)VK_SPACE, IntPtr.Zero);
-                                    return true;
-                                }, IntPtr.Zero);
+                                _pausedWin32Windows.Add(proc.MainWindowHandle);
                             }
                         }
                         catch { }
@@ -305,113 +241,38 @@ namespace Sakshi.Death
                 }
             }
             catch { }
+        }
 
-            // 4. Hardware Media Play/Pause Broadcast
-            try
+        /// <summary>
+        /// Restores media playback for sessions that were actively playing and paused by Death.
+        /// </summary>
+        public static async Task RestorePausedMediaAsync()
+        {
+            // 1. Resume WinRT GSMTC sessions that were paused by Death
+            foreach (var session in _pausedGsmtcSessions)
             {
-                keybd_event(VK_MEDIA_PLAY_PAUSE, 0, 0, UIntPtr.Zero);
-                keybd_event(VK_MEDIA_PLAY_PAUSE, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+                try
+                {
+                    await session.TryPlayAsync();
+                }
+                catch { }
             }
-            catch { }
+            _pausedGsmtcSessions.Clear();
+
+            // 2. Resume Classic Win32 Desktop Players (VLC, WMP)
+            foreach (var hWnd in _pausedWin32Windows)
+            {
+                try
+                {
+                    SendMessage(hWnd, WM_APPCOMMAND, hWnd, (IntPtr)(APPCOMMAND_MEDIA_PLAY << 16));
+                }
+                catch { }
+            }
+            _pausedWin32Windows.Clear();
         }
         #endregion
 
-        #region --- WASAPI AUDIO SESSION MUTE TAKEOVER ---
-        private static bool IsExempt(uint pid, uint myPid)
-        {
-            if (pid == 0) return true; // System alert sounds
-            if (pid == myPid) return true; // Our own process
 
-            try
-            {
-                using var proc = Process.GetProcessById((int)pid);
-                string name = proc.ProcessName.ToLowerInvariant();
-                if (name.Contains("powershell") ||
-                    name.Contains("pwsh") ||
-                    name.Contains("conhost") ||
-                    name.Contains("windowsterminal") ||
-                    name.Contains("openconsole"))
-                {
-                    return true;
-                }
-            }
-            catch { }
-            return false;
-        }
-
-        public static void MuteOtherSessions(bool mute, uint myPid)
-        {
-            try
-            {
-                var enumerator = new MMDeviceEnumeratorComObject() as IMMDeviceEnumerator;
-                if (enumerator == null) return;
-
-                if (enumerator.GetDefaultAudioEndpoint(0, 1, out IMMDevice endpoint) != 0 || endpoint == null)
-                    return;
-
-                var managerId = new Guid("77AA99A0-1BD6-484F-8BC7-2C654C9A9B6F");
-                if (endpoint.Activate(ref managerId, 23, 0, out object obj) != 0 || obj == null)
-                {
-                    Marshal.ReleaseComObject(endpoint);
-                    return;
-                }
-
-                if (obj is not IAudioSessionManager2 manager)
-                {
-                    Marshal.ReleaseComObject(endpoint);
-                    return;
-                }
-
-                if (manager.GetSessionEnumerator(out IAudioSessionEnumerator sessionEnum) != 0 || sessionEnum == null)
-                {
-                    Marshal.ReleaseComObject(manager);
-                    Marshal.ReleaseComObject(endpoint);
-                    return;
-                }
-
-                if (sessionEnum.GetCount(out int count) == 0 && count > 0)
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        if (sessionEnum.GetSession(i, out IAudioSessionControl session) == 0 && session != null)
-                        {
-                            if (session is IAudioSessionControl2 session2)
-                            {
-                                if (session2.IsSystemSoundsSession() == 0)
-                                {
-                                    Marshal.ReleaseComObject(session);
-                                    continue;
-                                }
-
-                                session2.GetProcessId(out uint pid);
-
-                                if (!mute || !IsExempt(pid, myPid))
-                                {
-                                    if (session is ISimpleAudioVolume simpleVolume)
-                                    {
-                                        simpleVolume.SetMute(mute, Guid.Empty);
-                                    }
-                                }
-                            }
-                            else if (!mute)
-                            {
-                                if (session is ISimpleAudioVolume simpleVolume)
-                                {
-                                    simpleVolume.SetMute(false, Guid.Empty);
-                                }
-                            }
-                            Marshal.ReleaseComObject(session);
-                        }
-                    }
-                }
-
-                Marshal.ReleaseComObject(sessionEnum);
-                Marshal.ReleaseComObject(manager);
-                Marshal.ReleaseComObject(endpoint);
-            }
-            catch { }
-        }
-        #endregion
 
         #region --- PCM SOUND SYNTHESIZER ---
         /// <summary>
@@ -517,13 +378,17 @@ namespace Sakshi.Death
         }
 
         /// <summary>
-        /// Enforces topmost placement and foreground lock bypass cleanly (zero flicker/glitch).
+        /// Enforces topmost placement, foreground lock bypass, and hardware full-screen rect
+        /// to guarantee the Windows 11 taskbar never bleeds over the lockdown overlay.
         /// </summary>
         public static void EnforceTopmost(IntPtr hWnd)
         {
             if (hWnd == IntPtr.Zero) return;
             try
             {
+                int screenW = GetSystemMetrics(SM_CXSCREEN);
+                int screenH = GetSystemMetrics(SM_CYSCREEN);
+
                 IntPtr fgWnd = GetForegroundWindow();
                 if (fgWnd != hWnd)
                 {
@@ -534,19 +399,20 @@ namespace Sakshi.Death
                     {
                         AttachThreadInput(curThread, fgThread, true);
                         BringWindowToTop(hWnd);
-                        ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+                        ShowWindow(hWnd, SW_SHOWNORMAL);
                         SetForegroundWindow(hWnd);
                         AttachThreadInput(curThread, fgThread, false);
                     }
                     else
                     {
                         BringWindowToTop(hWnd);
-                        ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+                        ShowWindow(hWnd, SW_SHOWNORMAL);
                         SetForegroundWindow(hWnd);
                     }
-
-                    SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
                 }
+
+                // Explicitly lock window to raw physical display bounds over the taskbar
+                SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, screenW, screenH, SWP_SHOWWINDOW);
             }
             catch { }
         }

@@ -60,12 +60,12 @@ The Death engine operates on a decoupled architecture where Windows Task Schedul
 ┌───────────────────────────────────────────────────────────┐
 │             Death.exe (~/.local/bin/Death.exe)            │
 │                                                           │
-│  1. 4-Tier Media Freeze: Pauses YouTube, Spotify, VLC     │
-│  2. WASAPI Audio Takeover: Low-level session mute         │
+│  1. Targeted Media Freeze: Pauses Browsers, WMP, VLC     │
+│  2. Zero Dev Interference: ffmpeg, Python, alerts pass         │
 │  3. In-Memory PCM Synth: Calibrated 1800/1500Hz tick-tock │
 │  4. DirectX OLED Lockdown: Topmost, borderless fullscreen │
 │  5. Win32 LL Keyboard Hook: Suppresses escape shortcuts   │
-│  6. Release: Resonant chime, quote unlock, unmute audio   │
+│  6. Release: Resonant chime, quote unlock, restore media   │
 └─────────────────────────────┬─────────────────────────────┘
                               │
                               ▼
@@ -81,30 +81,35 @@ To ensure disciplinary integrity, the Death engine implements a multi-layer lock
 | Vector | Defense Mechanism | Technical Implementation |
 | :--- | :--- | :--- |
 | **Taskbar Close** | **Icon Eradication** | `ShowInTaskbar="False"` prevents the window from appearing on the Windows 11 taskbar, eliminating right-click "Close" or "End Task". |
-| **System Hotkeys** | **Low-Level Keyboard Hook** | Win32 `SetWindowsHookEx(WH_KEYBOARD_LL)` intercepts and consumes `VK_LWIN`, `VK_RWIN`, `VK_TAB` (`Alt+Tab`), `VK_ESCAPE` (`Alt+F4`, `Ctrl+Esc`), and `VK_APPS`. Automatically unhooked upon unlock. |
-| **Window Minimizing** | **State Enforcement** | `Window_StateChanged` overrides any attempt to minimize or restore down, immediately asserting `WindowState.Maximized`. |
+| **System Hotkeys** | **Low-Level Keyboard Hook** | Win32 `SetWindowsHookEx(WH_KEYBOARD_LL)` intercepts and consumes `VK_LWIN`, `VK_RWIN`, `VK_APPS`, `Alt+Tab`, `Alt+Esc`, `Alt+F4`, `Ctrl+Esc`, and `Alt+Space` (blocks system menu). Auto-unhooked upon unlock + global crash safety traps. |
+| **Window Minimizing** | **State Enforcement** | `Window_StateChanged` overrides any attempt to minimize or restore down, immediately asserting `WindowState.Normal` with full display bounds. |
+| **Taskbar Bleed Defense** | **Physical Rect Lockout** | Queries `GetSystemMetrics(SM_CXSCREEN/SM_CYSCREEN)` and calls `SetWindowPos(HWND_TOPMOST, 0, 0, screenW, screenH)` to guarantee the Windows 11 taskbar never pops over the lockdown screen. |
 | **Virtual Desktops** | **COM VDM Pinning** | Queries `IVirtualDesktopManager` to detect the currently active virtual desktop and pin/teleport the lockdown overlay immediately to the user's viewport. |
 | **Foreground Lockout** | **Thread Input Attach** | Calls Win32 `AttachThreadInput` and `SetForegroundWindow` to bypass Windows foreground lock timeouts, guaranteeing top z-order. |
-
 ---
 
 ## 🔊 Audio Engine & Sound Synthesis
 
 The audio subsystem (`AudioEngine.cs`) manages session audio without external audio dependencies:
 
-1. **4-Tier Media Freeze**:
-   - Primary: WinRT `GlobalSystemMediaTransportControlsSessionManager` (GSMTC) pausing browsers, Spotify, and media players.
-   - Fallback 1: Win32 `WM_APPCOMMAND` (`APPCOMMAND_MEDIA_PAUSE`).
-   - Fallback 2: Virtual key injection `VK_MEDIA_PLAY_PAUSE`.
-   - Fallback 3: Focused `VK_SPACE` trigger.
-2. **WASAPI Audio Isolation**:
-   - Enumerates active Core Audio sessions via COM `IMMDeviceEnumerator` and `IAudioSessionManager2`.
-   - Mutes third-party audio streams during the countdown while exempting `Death.exe`.
-   - Restores pre-lockdown mute states immediately upon acknowledgment.
-3. **In-Memory PCM Clock Synthesizer**:
+1. **Targeted Media Freeze (Zero Dev Interference)**:
+   - Strictly targets:
+     - **Browsers** (Chrome, Edge, Firefox, Brave, Opera, Vivaldi, Arc, Zen, Waterfox)
+     - **Windows Media Player** (Classic `wmplayer` and modern Windows 11 Media Player / Groove)
+     - **VLC Media Player** (`vlc`)
+   - **Zero Blanket Muting**: Indiscriminate WASAPI session muting is eliminated. Background developer audio (`ffmpeg`, Python TTS / Vocalis, terminal bells, OS alerts) plays unimpeded.
+2. **In-Memory Paused Session Tracking & Auto-Restore**:
+   - Records only sessions actively `Playing` prior to lockdown via WinRT GSMTC (`SourceAppUserModelId`) and Win32 `WM_APPCOMMAND`.
+   - On unlock or dismissal, Death asynchronously calls `session.TryPlayAsync()` and `APPCOMMAND_MEDIA_PLAY` to cleanly resume playback. Pre-paused media remains untouched.
+3. **Cinematic 800ms Ambient Whistle Fade-In**:
+   - On onset, `The Whistle of Death` volume initializes at `0.0` and smoothly ramps to `0.40` over 800ms (40ms steps, +0.02 volume) to avoid sudden acoustic startle snaps.
+4. **Zero SSD Burn Ambient Audio Caching**:
+   - `%TEMP%\sakshi_death_ambient.mp3` is checked against embedded resource byte length on launch.
+   - Reuses cached file on recurring runs, yielding **0 MB of SSD disk writes** on scheduled executions.
+5. **In-Memory PCM Clock Synthesizer**:
    - Generates raw PCM wave streams in memory using high-frequency sine wave calculations.
    - Dual-tone ticking (1800Hz high tick, 1500Hz low tock) played via Win32 `PlaySound(SND_MEMORY | SND_ASYNC)`.
-4. **Resonant Unlock Chime**:
+6. **Resonant Unlock Chime**:
    - Pure 1200Hz chime synthesizing a smooth bell decay over 450ms, signaling that the countdown is complete.
 
 ---

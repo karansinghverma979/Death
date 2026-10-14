@@ -89,6 +89,19 @@ namespace Sakshi.Death
                 return;
             }
 
+            // Elevate process priority to High to guarantee 0-lag focus enforcement & fluid WPF animations
+            try
+            {
+                using var currentProc = System.Diagnostics.Process.GetCurrentProcess();
+                currentProc.PriorityClass = System.Diagnostics.ProcessPriorityClass.High;
+            }
+            catch { }
+
+            // Global Safety Traps: Guarantee unhooking & media restore on crash or abrupt exit
+            AppDomain.CurrentDomain.UnhandledException += (s, ev) => Sakshi.Death.MainWindow.ForceEmergencyCleanup();
+            DispatcherUnhandledException += (s, ev) => Sakshi.Death.MainWindow.ForceEmergencyCleanup();
+            AppDomain.CurrentDomain.ProcessExit += (s, ev) => Sakshi.Death.MainWindow.ForceEmergencyCleanup();
+
             base.OnStartup(e);
 
             // Parse optional CLI arguments: death --quote "My Custom Quote" or death -q My Custom Quote
@@ -164,6 +177,7 @@ namespace Sakshi.Death
 
         protected override void OnExit(ExitEventArgs e)
         {
+            Sakshi.Death.MainWindow.ForceEmergencyCleanup();
             if (_instanceMutex != null)
             {
                 _instanceMutex.ReleaseMutex();
