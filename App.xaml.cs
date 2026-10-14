@@ -189,7 +189,7 @@ namespace Sakshi.Death
         private static void PrintHelp()
         {
             try { Console.OutputEncoding = System.Text.Encoding.UTF8; } catch { }
-            Console.WriteLine("Death 4.0.0 (Memento Mori)");
+            Console.WriteLine("Death 2.0.0 (Memento Mori)");
             Console.WriteLine("Autonomous hardware-accelerated disciplinary overwatch for Windows.");
             Console.WriteLine();
             Console.WriteLine("Usage: Death [OPTIONS]");
